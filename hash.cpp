@@ -7,6 +7,8 @@ class Customer {
     int code;
     string name;
     void ini(int code, string name);
+    int getCode() { return code; } 
+    string getName() {return name; }
 };
 
 void Customer::ini(int code, string name) {
@@ -49,11 +51,10 @@ void Hash::insertTest(Customer *cl) {
   cout << "Cliente chegando? " << cl << endl;
   cout << "index " << index << endl; // blz, calculou o indice
 
-  Customer *p = new Customer();
-  clientes[index].push_back(*p);  //isso q acho q n ta rolando
-  //clientes[index].push_back(*cl);
+  clientes[index].push_back(*cl);
 
   int sizetable = sizeof(clientes)/sizeof(clientes[0]);
+  cout << "Look -> " << clientes[index].front().name << endl;
   cout << sizetable << endl;
 } 
   
@@ -69,20 +70,20 @@ void Hash::insertItem(int key) {
 } 
   
 void Hash::deleteItem(int key) { 
-  // get the hash index of key 
+  // vai direto pro indice no array que a chave tá (ou deveria estar)
   int index = hashFunction(key); 
   
-  // find the key in (inex)th list 
-  list <int> :: iterator i; 
-  for (i = table[index].begin(); 
-    i != table[index].end(); i++) { 
-    if (*i == key) 
-      break; 
+  //tentando achar a chave iterando a lista
+  list <Customer> :: iterator i; 
+  for (i = clientes[index].begin(); i != clientes[index].end(); i++) { 
+    cout << i->code << endl;
+    if (i->code == key) 
+     break; 
   } 
   
-  // if key is found in hash table, remove it 
-  if (i != table[index].end()) 
-    table[index].erase(i); 
+  // achou? hora de remover
+  if (i != clientes[index].end()) 
+   clientes[index].erase(i); 
 } 
   
 // function to display hash table 
@@ -90,9 +91,10 @@ void Hash::displayHash() {
   for (int i = 0; i < BUCKET; i++) { 
     cout << i; 
     int sizetable = sizeof(clientes)/sizeof(clientes[0]);
-    cout << "-->" << sizetable << endl;
-    // for (auto &x : table[i]) 
-    //   cout << " --> " << x;
+    //cout << "-->" << sizetable << endl;
+
+    for (auto x : clientes[i]) 
+      cout << " --> " << x.getName() << "(" << x.getCode() << ")";
     cout << endl; 
   } 
 } 
@@ -100,10 +102,11 @@ void Hash::displayHash() {
 // function to search value in hash table
 void Hash::search(int key) {
   for (int i = 0; i < BUCKET; i++) { 
-    for (auto x : table[i]) {
-      if(x == key){
+    for (auto x : clientes[i]) {
+      if(x.getCode() == key){
         cout << "Chave " << key;
         cout << " Encontrado no Bucket: " << i << endl;
+        break;
       }
     }
     //cout << "Encontrado no Bucket: " << i;
@@ -130,10 +133,15 @@ int main() {
     //cliente->code = 7;
     //cliente->name = "gustavo";
     cliente->ini(7, "gustavo");
+    cout << "Tentando inserir" << endl;
     h.insertTest(cliente);
 
     cliente->code = 15;
     cliente->name = "henrique";
+    h.insertTest(cliente);
+
+    cliente->code = 8;
+    cliente->name = "silva";
     h.insertTest(cliente);
   
   // delete 12 from hash table 
