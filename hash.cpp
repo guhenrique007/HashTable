@@ -1,4 +1,5 @@
 #include<bits/stdc++.h> 
+#include <stdio.h>
 using namespace std; 
 
 
@@ -20,7 +21,7 @@ class Hash {
   int BUCKET;    // No. of buckets 
 
   // Pointer to an array containing buckets 
-  list<int> *table; 
+  //list<int> *table; 
 
   list<Customer> *clientes;
 
@@ -28,15 +29,15 @@ class Hash {
     Hash(int V);  // Constructor 
 
     // inserts a key into hash table 
-    void insertItem(int x); 
+    // void insertItem(int x); 
 
-    void insertTest(Customer *cl);
+    void insertItem(Customer *cl);
 
     // deletes a key from hash table 
     void deleteItem(int key); 
 
     // search a key from hash table
-    void search(int key);
+    int search(int key);
 
     // hash function to map values to key 
     int hashFunction(int x) { 
@@ -44,11 +45,12 @@ class Hash {
     } 
 
   void displayHash(); 
+  void saveInFile(); 
 }; 
 
-void Hash::insertTest(Customer *cl) { 
+void Hash::insertItem(Customer *cl) { 
   int index = hashFunction(cl->code); 
-  cout << "index " << index << endl; 
+  //cout << "index " << index << endl; 
 
   clientes[index].push_back(*cl);
 
@@ -58,11 +60,6 @@ void Hash::insertTest(Customer *cl) {
 Hash::Hash(int b) { 
   this->BUCKET = b; 
   clientes = new list<Customer>[BUCKET]; 
-} 
-  
-void Hash::insertItem(int key) { 
-  int index = hashFunction(key); 
-  table[index].push_back(key);  
 } 
   
 void Hash::deleteItem(int key) { 
@@ -94,17 +91,34 @@ void Hash::displayHash() {
   } 
 } 
 
+void Hash::saveInFile() { 
+  ofstream file;
+  file.open ("data.txt", std::ofstream::out | std::ofstream::trunc);
+
+  for (int i = 0; i < BUCKET; i++) { 
+    int sizetable = sizeof(clientes)/sizeof(clientes[0]);
+
+    for (auto x : clientes[i]) 
+      file << x.getName() << " " << x.getCode() << "\n";
+  } 
+
+  file.close();
+}
+
 // function to search value in hash table
-void Hash::search(int key) {
+int Hash::search(int key) {
   for (int i = 0; i < BUCKET; i++) { 
     for (auto x : clientes[i]) {
-      if(x.getCode() == key){
+      if(x.getCode() == key) {
         cout << "Chave " << key;
         cout << " Encontrado no Bucket: " << i << endl;
-        break;
+        return 0;
+        //break;
       }
     }
   }
+
+  return 1;
 }
   
 // Driver program  
@@ -115,27 +129,66 @@ int main() {
   int stopMenu = false;
   int a[] = {15, 11, 27, 8, 12}; 
   int n = sizeof(a)/sizeof(a[0]); 
-  
+  int result;
+
   // insert the keys into the hash table 
-  Hash h(7);   
+  Hash h(7);
 
   Customer *cliente = new Customer();
-  cliente->ini(7, "gustavo");
-  cout << "Tentando inserir" << endl;
-  h.insertTest(cliente);
+  int hasCode;
+  hasCode = h.search(7);
+  if(hasCode != 0) {
+    cliente->ini(17, "henrique");
+    // cout << "Tentando inserir" << endl;
+    h.insertItem(cliente);
+  }
 
-  cliente->code = 15;
-  cliente->name = "henrique";
-  h.insertTest(cliente);
+  // cliente->code = 15;
+  // cliente->name = "henrique";
+  // h.insertItem(cliente);
 
-  cliente->code = 8;
-  cliente->name = "silva";
-  h.insertTest(cliente);
+  // cliente->code = 8;
+  // cliente->name = "silva";
+  // h.insertItem(cliente);
+
+  int i = 0;
+  int j = 0;
+  string line;
+  ifstream infile("data.txt");
+
+  while(getline(infile, line)){
+    stringstream ssLine(line);
+    string substr;
+    i++;
+    j=0;
+    cout << "linha -------------- " << i << endl;
+    
+    while(ssLine) {
+      j++;
+      ssLine >> substr;
+
+      if( j % 3 != 0) {
+        cout << "(Word " << j << ")" << endl;
+        cout << substr << j%2 <<  endl;
+        if(j % 2 != 0) {
+          cliente->name = substr;
+        } else {
+          cout << "cast " << substr << " " << substr.c_str() << "  " << atoi(substr.c_str()) << endl;
+          cliente->code = atoi(substr.c_str());
+          cout << "vai inserir o codigo " << cliente->code <<endl;
+
+          hasCode = h.search(cliente->code);
+          if(hasCode != 0) {
+            h.insertItem(cliente);
+          }
+        }
+      }
+      
+    }
+  }
+  infile.close();
   
   h.displayHash(); 
-
-  
-
 
   while(!stopMenu) {
     cout << "################################"<<endl;
@@ -143,7 +196,7 @@ int main() {
     cout << "Pressione 2 para Ver a hash" << endl;
     cout << "Pressione 3 para Buscar" << endl;
     cout << "Pressione 4 para Apagar" << endl;
-    cout << "Pressione 0 para sair" << endl;
+    cout << "Pressione 0 para Salvar e sair" << endl;
     cout << "################################"<<endl;
 
     cin >> option;
@@ -163,10 +216,18 @@ int main() {
         cout << "Codigo:" << cliente->code << endl;
         cout << cliente->name << endl;
 
-        h.insertTest(cliente);
-        cout << "Inserido com sucesso" << endl;
-        cout << "-------------" << endl;
-        h.displayHash(); 
+        int hasCode;
+        hasCode = h.search(codigo);
+
+        if(hasCode != 0) {
+          h.insertItem(cliente);
+          cout << "Inserido com sucesso" << endl;
+          cout << "-------------" << endl;
+          h.displayHash(); 
+        } else {
+          cout << "Codigo ja utilizado" << endl;
+        }
+
         break;
       case 2:
         h.displayHash(); 
@@ -182,6 +243,7 @@ int main() {
         h.deleteItem(valor);
         break;
       case 0:
+        h.saveInFile();
         cout << "case: " << option;
         stopMenu = true;
         break;

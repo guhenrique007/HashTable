@@ -1,0 +1,4 @@
+gustavo 7
+henrique 17
+luis 3
+thiago 5
