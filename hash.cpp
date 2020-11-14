@@ -48,19 +48,15 @@ class Hash {
 
 void Hash::insertTest(Customer *cl) { 
   int index = hashFunction(cl->code); 
-  cout << "Cliente chegando? " << cl << endl;
-  cout << "index " << index << endl; // blz, calculou o indice
+  cout << "index " << index << endl; 
 
   clientes[index].push_back(*cl);
 
   int sizetable = sizeof(clientes)/sizeof(clientes[0]);
-  cout << "Look -> " << clientes[index].front().name << endl;
-  cout << sizetable << endl;
 } 
   
 Hash::Hash(int b) { 
   this->BUCKET = b; 
-  //table = new list<int>[BUCKET];
   clientes = new list<Customer>[BUCKET]; 
 } 
   
@@ -91,7 +87,6 @@ void Hash::displayHash() {
   for (int i = 0; i < BUCKET; i++) { 
     cout << i; 
     int sizetable = sizeof(clientes)/sizeof(clientes[0]);
-    //cout << "-->" << sizetable << endl;
 
     for (auto x : clientes[i]) 
       cout << " --> " << x.getName() << "(" << x.getCode() << ")";
@@ -109,7 +104,6 @@ void Hash::search(int key) {
         break;
       }
     }
-    //cout << "Encontrado no Bucket: " << i;
   }
 }
   
@@ -125,29 +119,19 @@ int main() {
   // insert the keys into the hash table 
   Hash h(7);   
 
-  // hash table 
-  // for (int i = 0; i < n; i++)  
-  //   h.insertItem(a[i]);   
+  Customer *cliente = new Customer();
+  cliente->ini(7, "gustavo");
+  cout << "Tentando inserir" << endl;
+  h.insertTest(cliente);
 
-    Customer *cliente = new Customer();
-    //cliente->code = 7;
-    //cliente->name = "gustavo";
-    cliente->ini(7, "gustavo");
-    cout << "Tentando inserir" << endl;
-    h.insertTest(cliente);
+  cliente->code = 15;
+  cliente->name = "henrique";
+  h.insertTest(cliente);
 
-    cliente->code = 15;
-    cliente->name = "henrique";
-    h.insertTest(cliente);
-
-    cliente->code = 8;
-    cliente->name = "silva";
-    h.insertTest(cliente);
+  cliente->code = 8;
+  cliente->name = "silva";
+  h.insertTest(cliente);
   
-  // delete 12 from hash table 
-  //h.deleteItem(12); 
-  
-  // display the Hash table 
   h.displayHash(); 
 
   
@@ -166,10 +150,6 @@ int main() {
 
     cout << "Opcao escolhida: " << option << endl;
 
-    //int opt;
-    //scanf("%d",&opt);
-    //printf("%d", opt);
-
     switch(option) {
       case 1: 
         cout << "Digite o codigo que deseja inserir" << endl;
@@ -178,18 +158,15 @@ int main() {
         cout << "Digite o nome do cliente" << endl;
         cin >> nome;
 
-        // Customer *cliente = new Customer();
         cliente->ini(codigo, nome);
         cout << "-------------" << endl;
         cout << "Codigo:" << cliente->code << endl;
         cout << cliente->name << endl;
 
-        cout << "Objeto:" << cliente << endl;
-
-        //h.insertItem(valor);
+        h.insertTest(cliente);
         cout << "Inserido com sucesso" << endl;
         cout << "-------------" << endl;
-        //h.displayHash(); 
+        h.displayHash(); 
         break;
       case 2:
         h.displayHash(); 
